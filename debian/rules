@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@ --with systemd
+
+override_dh_auto_install:
+	dh_auto_install -- PREFIX=/usr
+	install -D -m 0644 jitterentropy.service \
+		debian/jitterentropy-rngd/lib/systemd/system/jitterentropy.service
+
+override_dh_installchangelogs:
+	dh_installchangelogs CHANGES

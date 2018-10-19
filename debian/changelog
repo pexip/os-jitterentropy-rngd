@@ -1,0 +1,25 @@
+jitterentropy-rngd (1.0.8-3) unstable; urgency=medium
+
+  * Add jitterentropy-rngd.init sysv script.
+  * Override Lintian warning about unusual systemd target.
+    The daemon needs to start as early as possible to provide entrophy
+    during boot.
+  * Install upstream changelog.
+  * Bump Standards-Version to 4.2.1.
+
+ -- Luca Boccassi <bluca@debian.org>  Fri, 19 Oct 2018 11:47:22 +0100
+
+jitterentropy-rngd (1.0.8-2) unstable; urgency=medium
+
+  * Set homepage to specific project link. (Closes: #904721)
+  * Set architecture to linux-any, as this package is linux specific.
+  * Bump Standards-Version to 4.1.5, no changes.
+
+ -- Luca Boccassi <bluca@debian.org>  Fri, 27 Jul 2018 09:40:19 +0100
+
+jitterentropy-rngd (1.0.8-1) unstable; urgency=medium
+
+  * Initial packaging. (Closes: #901812)
+  * Backport patch to fix systemd unit name and install it.
+
+ -- Luca Boccassi <bluca@debian.org>  Thu, 21 Jun 2018 17:43:43 +0100
