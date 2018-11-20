@@ -1,0 +1,9 @@
+--- a/jitterentropy.service.in
++++ b/jitterentropy.service.in
+@@ -19,5 +19,5 @@
+ #ReadWriteDirectories=/dev
+ 
+ [Install]
+-WantedBy=basic.target
++WantedBy=sysinit.target
+ Alias=jitterentropy-rngd.service

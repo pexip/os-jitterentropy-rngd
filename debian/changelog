@@ -1,3 +1,9 @@
+jitterentropy-rngd (1.0.8-3pexip2) pexip; urgency=medium
+
+  * Change systemd target to sysinit
+
+ -- John-Mark Bell <jmb@pexip.com>  Tue, 20 Nov 2018 15:25:44 +0000
+
 jitterentropy-rngd (1.0.8-3pexip1) pexip; urgency=medium
 
   * Prepare Pexip packaging
