@@ -1,3 +1,16 @@
+jitterentropy-rngd (1.0.8-4) unstable; urgency=medium
+
+  [ Helmut Grohne ]
+  * Don't strip during make install. (Closes: #930203)
+
+  [ Luca Boccassi ]
+  * Backport 0002-Makefile-support-cross-compiling.patch to fix
+    crosscompiling. (Closes: #930203)
+  * Bump Standards-Version to 4.3.0, no changes.
+  * Set Rules-Requires-Root: no.
+
+ -- Luca Boccassi <bluca@debian.org>  Sat, 08 Jun 2019 12:02:30 +0100
+
 jitterentropy-rngd (1.0.8-3) unstable; urgency=medium
 
   * Add jitterentropy-rngd.init sysv script.

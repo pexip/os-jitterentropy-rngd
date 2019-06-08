@@ -1,0 +1,29 @@
+Author: Bill Pittman <bill.pittman@ni.com>
+Description: Makefile: support cross compiling
+ Change several assignments to allow use of environment variables
+ for cross compiling.  Also remove the -s (strip) option from the
+ install command since cross compiled binaries are not compatible.
+Applied-Upstream: commit,ad4d6364279fa437a433bbc49d851e35b8dc467d
+Origin: upstream,https://github.com/smuellerDD/jitterentropy-rngd/pull/5
+Debian-Bug: http://bugs.debian.org/930203
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ # Compile Noise Source as user space application
+ 
+-CC=$(CROSS_COMPILE)gcc
+-STRIP=$(CROSS_COMPILE)strip
++CC ?= $(CROSS_COMPILE)gcc
++STRIP ?= $(CROSS_COMPILE)strip
+ CFLAGS ?=-Wextra -Wall -pedantic -fPIE -pie -fstack-protector-strong -fwrapv --param ssp-buffer-size=4
+ LDFLAGS ?=-Wl,-z,relro,-z,now
+ 
+@@ -36,7 +36,7 @@
+ 	$(STRIP) --strip-unneeded $(NAME)
+ 
+ install: strip
+-	$(INSTALL) -D -m 0755 -s $(NAME) $(DESTDIR)$(PREFIX)/sbin/$(NAME)
++	$(INSTALL) -D -m 0755 $(NAME) $(DESTDIR)$(PREFIX)/sbin/$(NAME)
+ 	$(INSTALL) -D -m 0644 $(NAME).1 $(DESTDIR)$(PREFIX)/share/man/man1/$(NAME).1
+ 	gzip -9 $(DESTDIR)$(PREFIX)/share/man/man1/$(NAME).1
+ 	sed "s|@PATH@|$(PREFIX)/sbin|" jitterentropy.service.in > jitterentropy.service
