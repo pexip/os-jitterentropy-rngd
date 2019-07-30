@@ -1,2 +1,3 @@
 0001-Generate-service-file-with-correct-path-to-daemon.patch
+0002-Makefile-support-cross-compiling.patch
 wantedby-sysinit.patch
