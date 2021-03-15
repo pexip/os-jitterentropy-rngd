@@ -1,3 +1,42 @@
+jitterentropy-rngd (1.2.1-2) unstable; urgency=medium
+
+  * Backport patches to fix 100% CPU usage bug when running on kernel
+    5.11 or newer. (Closes: #985302)
+  * Add d/upstream/metadata file
+
+ -- Luca Boccassi <bluca@debian.org>  Mon, 15 Mar 2021 17:07:43 +0000
+
+jitterentropy-rngd (1.2.1-1) unstable; urgency=medium
+
+  * Update upstream source from tag 'upstream/1.2.1'
+
+ -- Luca Boccassi <bluca@debian.org>  Fri, 22 Jan 2021 11:43:55 +0000
+
+jitterentropy-rngd (1.2.0-1) unstable; urgency=medium
+
+  * Merge branch 'lintian-fixes' into 'master'
+  * Update upstream source from tag 'upstream/1.2.0'
+  * Bump Standards-Version to 4.5.1, no changes
+  * Switch to debhelper-compat 13
+  * Use https in d/copyright
+  * Add Pre-Depends: ${misc:Pre-Depends}
+  * Override Lintian false positive
+
+ -- Luca Boccassi <bluca@debian.org>  Fri, 04 Dec 2020 19:55:20 +0000
+
+jitterentropy-rngd (1.1.0-1) unstable; urgency=medium
+
+  * Update upstream source from tag 'upstream/1.1.0'
+  * Drop patches merged upstream in v1.1.0
+  * Bump Standards-Version to 4.4.0, no changes
+  * d/rules: systemd unit is installed by the makefile now
+  * d/rules: CHANGES was renamed to CHANGES.md
+  * Add build-dependency on pkg-config and systemd for systemd.pc
+  * Enable all hardening flags, 'bind now' was missing
+  * d/watch: switch to https
+
+ -- Luca Boccassi <bluca@debian.org>  Sat, 28 Sep 2019 14:06:14 +0100
+
 jitterentropy-rngd (1.0.8-4) unstable; urgency=medium
 
   [ Helmut Grohne ]
