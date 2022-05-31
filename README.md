@@ -10,6 +10,9 @@ The seeding of /dev/random also ensures that /dev/urandom benefits from
 entropy. Especially during boot time, when the entropy of Linux is low,
 the Jitter RNGd provides a source of sufficient entropy.
 
+By using the SP800-90B-compliant Jitter RNG core library, the RNGd itself
+is now fully SP800-90B compliant.
+
 Build Instructions
 ==================
 
@@ -31,6 +34,23 @@ The unit file ensures that the Jitter RNGd is started as one of the first
 daemons during the user space start process. This shall guarantee that
 any cryptographic daemons, like sshd or a web server, benefits from a seeded
 /dev/random and /dev/urandom device at the time they start up.
+
+Docker
+======
+
+Run using docker-compose:
+
+```
+docker-compose up -d
+```
+
+Build and run manually:
+
+```
+docker build -t jitterentropy-rngd .
+docker run --cap-add=SYS_ADMIN --cap-drop=ALL --name=rngd --network=none \
+    --restart=always -d jitterentropy-rngd
+```
 
 Version Numbers
 ===============

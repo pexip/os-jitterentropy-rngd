@@ -1,3 +1,28 @@
+1.2.1:
+  * on older GCC versions use -fstack-protector as suggested by Warszawski,
+   Diego
+ * prevent creating the internal timer thread if a high-res hardware timer is
+   found as reported by Lonnie Abelbeck
+ * disable RNDRESEEDCRNG on kernels < 4.17 as suggested by Warszawski, Diego
+ * Use Jitter RNG library 3.0.1
+
+1.2.0:
+ * Due to the removal of the blocking pool in kernel 5.6, it is becoming
+   very unlikely that the user space rngd is ever triggered by the kernel.
+   Thus, the jitterentropy-rngd now injects entropy every 10 minutes
+   unconditionally.
+ * Use the RNDRESEEDCRNG ioctl after injecting entropy to guarantee that
+   the new entropy is immediately forwarded to the ChaCha20 DRNG. Otherwise
+   the ChaCha20 DRNG will not benefit from the new entropy up to 5 minutes
+   after the injection of the entropy.
+ * Use Jitter RNG library 3.0.0
+
+1.1.0:
+ * avert crash during shutdown when the kernel sends a SIGALRM while the
+   Jitter RNG is deallocated
+ * Fix: unsafe signal handling by Gerald Lledo
+ * import jitterentropy library 2.2.0 to make rngd fully SP800-90B compliant
+
 1.0.8:
  * Fix incomplete jitterentropy core 2.1.1 import
 

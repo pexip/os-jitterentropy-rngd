@@ -1,7 +1,7 @@
 ﻿/*
  * Non-physical true random number generator based on timing jitter.
  *
- * Copyright Stephan Mueller <smueller@chronox.de>, 2014
+ * Copyright Stephan Mueller <smueller@chronox.de>, 2014 - 2021
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,6 +50,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/random.h>
+#include <linux/version.h>
 #include <signal.h>
 
 #include "jitterentropy.h"
@@ -58,10 +59,10 @@
 		      * require consumer to be updated (as long as this number
 		      * is zero, the API is not considered stable and can
 		      * change without a bump of the major version) */
-#define MINVERSION 0 /* API compatible, ABI may change, functional
+#define MINVERSION 2 /* API compatible, ABI may change, functional
 		      * enhancements only, consumer can be left unchanged if
 		      * enhancements are not considered */
-#define PATCHLEVEL 8 /* API / ABI compatible, no functional changes, no
+#define PATCHLEVEL 1 /* API / ABI compatible, no functional changes, no
 		      * enhancements, bug fixes only */
 
 static int Verbosity = 0;
@@ -99,8 +100,15 @@ static int Entropy_avail_fd = 0;
 #define ENTROPYBYTES 32
 #define OVERSAMPLINGFACTOR 2
 #define ENTROPYTHRESH 1024
+/*
+ * After FORCE_RESEED_WAKEUPS, the installed alarm handler will unconditionally
+ * trigger a reseed irrespective of the seed level. This ensures that new
+ * seed is added after FORCE_RESEED_WAKEUPS * (alarm period defined in
+ * install_alarm) == 120 * 5 == 600s.
+ */
+#define FORCE_RESEED_WAKEUPS	120
 #define ENTROPYAVAIL "/proc/sys/kernel/random/entropy_avail"
-#define LRNG_FILE "/proc/sys/kernel/random/lrng_type"
+#define LRNG_FILE "/proc/lrng_type"
 
 static void install_alarm(void);
 static void dealloc(void);
@@ -146,7 +154,7 @@ static void parse_opts(int argc, char *argv[])
 			{"version", 0, 0, 0},
 			{0, 0, 0, 0}
 		};
-		c = getopt_long(argc, argv, "vph:", opts, &opt_index);
+		c = getopt_long(argc, argv, "vp:h", opts, &opt_index);
 		if (-1 == c)
 			break;
 		switch (c) {
@@ -248,7 +256,7 @@ static size_t write_random(struct kernel_rng *rng, char *buf, size_t len,
 	memcpy(rng->rpi->buf, buf, len);
 	memset(buf, 0, len);
 
-	ret =  ioctl(rng->fd, RNDADDENTROPY, rng->rpi);
+	ret = ioctl(rng->fd, RNDADDENTROPY, rng->rpi);
 	if (0 > ret)
 		dolog(LOG_WARN, "Error injecting entropy: %s", strerror(errno));
 	else {
@@ -261,13 +269,28 @@ static size_t write_random(struct kernel_rng *rng, char *buf, size_t len,
 	rng->rpi->buf_size = 0;
 	memset(rng->rpi->buf, 0, len);
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4,17,0)
+	if (ioctl(rng->fd, RNDRESEEDCRNG) < 0 && errno != EINVAL) {
+		dolog(LOG_WARN,
+		      "Error triggering a reseed of the kernel DRNG: %s\n",
+		      strerror(errno));
+	}
+#endif
+
 	return written;
 }
 
 static size_t gather_entropy(struct kernel_rng *rng)
 {
+	sigset_t blocking_set, previous_set;
 	char buf[(ENTROPYBYTES * OVERSAMPLINGFACTOR)];
 	size_t ret = 0;
+
+	sigemptyset(&previous_set);
+	sigemptyset(&blocking_set);
+	sigaddset(&blocking_set, SIGALRM);
+
+	sigprocmask(SIG_BLOCK, &blocking_set, &previous_set);
 
 	if (0 > jent_read_entropy(rng->ec, buf, sizeof(buf))) {
 		dolog(LOG_WARN, "Cannot read entropy");
@@ -280,6 +303,8 @@ static size_t gather_entropy(struct kernel_rng *rng)
 	else
 		ret = sizeof(buf);
 	memset_secure(buf, 0, sizeof(buf));
+
+	sigprocmask(SIG_SETMASK, &previous_set, NULL);
 
 	return ret;
 }
@@ -323,10 +348,20 @@ static void sig_entropy_avail(int sig)
 {
 	int entropy = 0;
 	size_t written = 0;
+	static unsigned int force_reseed = FORCE_RESEED_WAKEUPS;
 
 	(void)sig;
 
 	dolog(LOG_VERBOSE, "Wakeup call for alarm on %s", ENTROPYAVAIL);
+
+	if (--force_reseed == 0) {
+		force_reseed = FORCE_RESEED_WAKEUPS;
+		dolog(LOG_DEBUG, "Force reseed", entropy);
+		written = gather_entropy(&Random);
+		dolog(LOG_VERBOSE, "%lu bytes written to /dev/random", written);
+		goto out;
+	}
+
 	entropy = read_entropy_avail(Entropy_avail_fd);
 
 	if (0 == entropy)
@@ -359,6 +394,16 @@ static void sig_term(int sig)
 {
 	(void)sig;
 	dolog(LOG_DEBUG, "Shutting down cleanly\n");
+
+	/* Prevent the kernel from interfering with the shutdown */
+	signal(SIGALRM, SIG_IGN);
+
+	/* If we got another termination signal, just get killed */
+	signal(SIGHUP, SIG_DFL);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	signal(SIGTERM, SIG_DFL);
+
 	dealloc();
 	exit(0);
 }
