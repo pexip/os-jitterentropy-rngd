@@ -1,3 +1,3 @@
 version=4
 opts="pgpsigurlmangle=s/$/.asc/,uversionmangle=s/2014/0.2014/" \
- http://www.chronox.de/jent.html jent/jitterentropy-rngd-(.+)\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))
+ https://www.chronox.de/jent.html jent/jitterentropy-rngd-(.+)\.(?:zip|tgz|tbz|txz|(?:tar\.(?:gz|bz2|xz)))
