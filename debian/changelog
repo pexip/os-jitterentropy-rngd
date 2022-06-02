@@ -1,3 +1,9 @@
+jitterentropy-rngd (1.2.1-2pexip1) pexip; urgency=medium
+
+  * Initial bullseye build
+
+ -- Mark Hymers <mark.hymers@pexip.com>  Thu, 02 Jun 2022 14:42:20 +0100
+
 jitterentropy-rngd (1.2.1-2) unstable; urgency=medium
 
   * Backport patches to fix 100% CPU usage bug when running on kernel
