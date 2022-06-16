@@ -1,7 +1,7 @@
 --- a/jitterentropy.service.in
 +++ b/jitterentropy.service.in
-@@ -19,5 +19,5 @@
- #ReadWriteDirectories=/dev
+@@ -45,5 +45,5 @@
+ UMask=0077
  
  [Install]
 -WantedBy=basic.target
