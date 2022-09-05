@@ -1,6 +1,12 @@
 #!/usr/bin/make -f
 
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+# Compiler optimizations break the entropy generator, upstream
+# fails the build if they are set.
+export DEB_CFLAGS_MAINT_STRIP = -O2
+export DEB_CFLAGS_MAINT_APPEND = -O0
+export DEB_CXXFLAGS_MAINT_STRIP = -O2
+export DEB_CXXFLAGS_MAINT_APPEND = -O0
 
 %:
 	dh $@

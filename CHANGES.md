@@ -1,3 +1,30 @@
+1.2.8:
+ * enhancement: use Jitter RNG library 3.4.1
+
+1.2.7:
+ * enhancement: use Jitter RNG library 3.4.0
+
+1.2.6:
+ * enhancement: use Jitter RNG library 3.3.1
+
+1.2.5:
+ * enhancement: use Jitter RNG library 3.3.0
+ * enhancement: add --flags command line option to allow specifying the integer value used as flags field to allocate the Jitter RNG - see jitterentropy(3) for details
+ * enhancement: add --osr command line option
+
+1.2.4:
+ * enhancement: use Jitter RNG library 3.2.0
+
+1.2.3:
+ * enhancement: use Jitter RNG library 3.1.0
+
+1.2.2:
+ * enhancement: Add SP800-90B compliant entropy injection
+ * fix: proper use of the RNDRESEEDCRNG IOCTL which otherwise causes an
+   endless loop due to kernel change 11a0b5e0ec8c13bef06f7414f9e914506140d5cb
+ * enhancement: Catch runtime FIPS health failures
+ * enhancement: use Jitter RNG library 3.0.2
+
 1.2.1:
   * on older GCC versions use -fstack-protector as suggested by Warszawski,
    Diego
